@@ -13,9 +13,11 @@ cwd=os.getcwd()
 print(cwd)
 app.config["UPLOAD_PATH"]=cwd
 
+@app.route("/index")
+def index_page():
+    	return render_template("indexx.html");
 
-
-@app.route("/",methods=["GET","POST"])  #Decorator
+@app.route("/classification",methods=["GET","POST"])  #Decorator
 def home_page():
 	if request.method=='POST':
 		f1=request.files['modelname']
