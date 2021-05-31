@@ -4,7 +4,7 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import pickle
 from sklearn import metrics
 import csv
-from flask import Flask,request,render_template,redirect,url_for
+from flask import Flask,request,render_template,redirect,url_for,json
 app=Flask(__name__)
 
 
@@ -63,13 +63,20 @@ def evaluate():
 	recall=metrics.recall_score(y_actual,y_pred)
 	f1=metrics.f1_score(y_actual,y_pred)
 	log_loss=metrics.log_loss(y_actual,probs)
+	data=[]
+	data.append(acc)
+	data.append(precision_score)
+	data.append(recall)
+	data.append(f1)
+	data.append(log_loss)
+	labels=["Accuracy","Precision","Recall","F1 Score","Logg Loss"]
 
 	for filename in os.listdir(cwd):
 		if filename.endswith(".sav"):
 			os.remove(filename)
 		if filename.endswith(".csv"):
 			os.remove(filename)
-	return render_template("evaluate.html",msg="files have been Uploaded",a=acc,p=precision_score,r=recall,f1=f1,log_loss=log_loss)
+	return render_template("evaluate.html",msg="files have been Uploaded",data=data,labels=labels)
 
 
 

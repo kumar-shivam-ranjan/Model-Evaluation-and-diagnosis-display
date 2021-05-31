@@ -14,13 +14,12 @@
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
       <canvas id="myChart" aria-label="chart" role="img" width="900" height="500"></canvas>
       <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.0/dist/chart.min.js"></script>
-      <script >
-          var metrics=[];
-          metrics.push({{a}});
-          metrics.push({{p}});
-          metrics.push({{r}});
-          metrics.push({{f1}});
-          metrics.push({{log_loss}})
+
+
+
+
+      <script>
+          var metrics={{data}}
           var ctx=document.getElementById("myChart").getContext("2d");
           var myChart=new Chart(ctx,{
 
@@ -52,7 +51,7 @@
               },
 
               options: {
-                
+
                 responsive: false,
                 layout:{
                   padding:{
@@ -62,6 +61,8 @@
             }
 
           });
+
+
       </script>
 
 
