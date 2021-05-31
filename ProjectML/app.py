@@ -141,6 +141,12 @@ def evaluate_regression():
 	mse = metrics.mean_squared_error(y_test, y_test_pred)
 	rmse = np.sqrt(metrics.mean_squared_error(y_test, y_test_pred))
 	rmsle = np.sqrt(metrics.mean_squared_log_error( y_test_new, y_pred ))
+
+	for filename in os.listdir(cwd):
+		if filename.endswith(".sav"):
+			os.remove(filename)
+		if filename.endswith(".csv"):
+			os.remove(filename)
 	return render_template("evaluate_regression.html",msg="files have been Uploaded",mae=mae,mse=mse,rmse=rmse,rmsle=rmsle,r2=r2,ar2=ar2)
 
 
