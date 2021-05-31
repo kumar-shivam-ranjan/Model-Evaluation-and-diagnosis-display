@@ -1,6 +1,6 @@
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-from sklearn.linear_model import LogisticRegression
+# from sklearn.linear_model import LogisticRegression
 import pickle
 from sklearn import metrics
 import csv
@@ -15,7 +15,7 @@ app.config["UPLOAD_PATH"]=cwd
 
 @app.route("/index")
 def index_page():
-    	return render_template("indexx.html");
+    	return render_template("index.html");
 
 @app.route("/classification",methods=["GET","POST"])  #Decorator
 def home_page():
@@ -26,7 +26,7 @@ def home_page():
 		f2.save(os.path.join(app.config['UPLOAD_PATH'],f2.filename))
 		return redirect(url_for("evaluate"))
 	else:
-		return render_template("index.html",msg="Upload your files")
+		return render_template("classification.html",msg="Upload your files")
 
 
 @app.route("/evaluate")
@@ -52,16 +52,30 @@ def evaluate():
 	loaded_model = pickle.load(open(model_file, 'rb'))
 	col_names = list_of_column_names[0]
 	pima=pd.read_csv(dataset_file,header=None,names=col_names,skiprows=1)
-	feature_cols = ['Pregnancies', 'Insulin', 'BMI', 'Age','Glucose','BloodPressure','DiabetesPedigreeFunction']
+	feature_cols=col_names[0:-1]
+	label=col_names[-1]
 	x=pima[feature_cols]
 	y_pred=loaded_model.predict(x)
-	y_actual=pima.Outcome
+	probs=loaded_model.predict_proba(x)
+	y_actual=pima[label]
 	acc=metrics.accuracy_score(y_actual,y_pred)
 	precision_score=metrics.precision_score(y_actual,y_pred)
 	recall=metrics.recall_score(y_actual,y_pred)
 	f1=metrics.f1_score(y_actual,y_pred)
-	r2=metrics.r2_score(y_actual,y_pred)
-	return render_template("evaluate.html",msg="files have been Uploaded",a=acc,p=precision_score,r=recall,f1=f1,r2=r2)
+	log_loss=metrics.log_loss(y_actual,probs)
+
+	for filename in os.listdir(cwd):
+		if filename.endswith(".sav"):
+			os.remove(filename)
+		if filename.endswith(".csv"):
+			os.remove(filename)
+	return render_template("evaluate.html",msg="files have been Uploaded",a=acc,p=precision_score,r=recall,f1=f1,log_loss=log_loss)
+
+
+
+def evaluate_regression():
+	pass
+
 
 
 
