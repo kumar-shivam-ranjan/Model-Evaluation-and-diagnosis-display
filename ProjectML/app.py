@@ -1,12 +1,13 @@
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import numpy as np 
+import pandas as pd 
 # from sklearn.linear_model import LogisticRegression
 import pickle
 from sklearn import metrics
 import csv
-from flask import Flask,request,render_template,redirect,url_for,json
+from flask import Flask,request,render_template,redirect,url_for,json,session 
+from sklearn.metrics import auc
 app=Flask(__name__)
-
+app.secret_key="wu87981ijwvh126wyp1iok"
 
 import os
 cwd=os.getcwd()
@@ -17,7 +18,7 @@ app.config["UPLOAD_PATH"]=cwd
 def index_page():
 		return render_template("index.html");
 
-@app.route("/classification",methods=["GET","POST"])  #Decorator
+@app.route("/classification",methods=["GET","POST"])  
 def home_page():
 	if request.method=='POST':
 		f1=request.files['modelname']
@@ -69,15 +70,47 @@ def evaluate():
 	data.append(recall)
 	data.append(f1)
 	data.append(log_loss)
-	labels=["Accuracy","Precision","Recall","F1 Score","Logg Loss"]
+	probs=probs[::,1]
+	fpr, tpr, _ = metrics.roc_curve(y_actual,  probs)
+	roc_auc = metrics.roc_auc_score(y_actual, probs)
+	precision_curve, recall_curve, _ = metrics.precision_recall_curve(y_actual, probs)
+	precision_recall_auc=auc(recall_curve,precision_curve)
+	labels=["Accuracy","Precision","Recall","F1 Score","Log Loss"]
 
-	for filename in os.listdir(cwd):
-		if filename.endswith(".sav"):
-			os.remove(filename)
-		if filename.endswith(".csv"):
-			os.remove(filename)
-	return render_template("evaluate.html",msg="files have been Uploaded",data=data,labels=labels)
 
+	session['accuracy']=acc
+	session['precision']=precision_score
+	session['recall']=recall
+	session['f1_score']=f1
+	session['log_loss']=log_loss
+	fpr=fpr.tolist()
+	tpr=tpr.tolist()
+	precision_curve=precision_curve.tolist()
+	recall_curve=recall_curve.tolist()
+	session['fpr']=fpr
+	session['tpr']=tpr 
+	session['auc']=roc_auc;
+	session['precision_curve']=precision_curve
+	session['recall_curve']=recall_curve
+	session['precision_recall_auc']=precision_recall_auc
+	return render_template("evaluate.html",msg="files have been Uploaded",data=data,labels=labels,auc=roc_auc,fpr=fpr,tpr=tpr,precision_curve=precision_curve,recall_curve=recall_curve)
+
+
+
+@app.route("/evaluate/auc")
+def evaluate_auc():
+	fpr=session['fpr']
+	tpr=session['tpr']
+	auc=session['auc']
+	return render_template("evaluate_auc.html",fpr=fpr,tpr=tpr,auc=auc)
+
+
+@app.route("/evaluate/pr_curve")
+def evaluate_pr_curve():
+	precision_curve=session['precision_curve']
+	recall_curve=session['recall_curve']
+	precision_recall_auc=session['precision_recall_auc']
+	return render_template("evaluate_precision_recall_curve.html",precision_curve=precision_curve,recall_curve=recall_curve,precision_recall_auc=precision_recall_auc)
 
 @app.route('/regression',methods=["GET","POST"])
 def regression():
