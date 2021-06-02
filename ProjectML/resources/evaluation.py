@@ -2,7 +2,9 @@ import sqlite3
 from flask_restful import Resource, reqparse
 from models.evaluation import EvalModel
 from resources.eval_functions import EvaluationFunctions
-from flask import Flask,request,render_template,redirect,url_for
+from flask import Flask,request,render_template,redirect,url_for, jsonify
+import json
+
 class Evaluate(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('model_path',
@@ -28,13 +30,26 @@ class Evaluate(Resource):
 
     def get(self,eval_id):
         evaluation_entity = EvalModel.find_by_id(eval_id)
+        print(evaluation_entity, type(evaluation_entity))
         if evaluation_entity:
             eval_dict = evaluation_entity.json()
+            # print("here_1")
+            # eval_dict = jsonify(evaluation_entity)
+            # print("here_2")
+            print(eval_dict, type(eval_dict))
             evaluation_object = EvaluationFunctions(eval_dict['model_type'], eval_dict['model_path'], eval_dict['dataset_path'])
+            print(evaluation_object, type(evaluation_entity))
             if eval_dict['model_type'] == 'regression':
-                return evaluation_object.evaluate_regression()
+                metrics = evaluation_object.evaluate_regression()
             else:
-                return evaluation_object.evaluate_classification()
+                metrics = evaluation_object.evaluate_classification()
+            print(metrics, type(metrics))
+            print(evaluation_entity.meta)
+            evaluation_entity.meta = json.dumps(metrics)
+            evaluation_entity.save_to_db()
+            return evaluation_entity.json()
+            # return metrics
+
         return {"message":"Requested evaluation entity doesn't exist"}, 404
 
 

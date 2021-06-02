@@ -1,4 +1,5 @@
 from db import db
+from sqlalchemy.dialects.postgresql import JSON
 
 class EvalModel(db.Model):
     __tablename__ = 'Evaluations'
@@ -6,11 +7,13 @@ class EvalModel(db.Model):
     eval_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
     model_type = db.Column(db.String(80))
+    meta = db.Column(JSON)
     model_path = db.Column(db.String(80))
     dataset_path = db.Column(db.String(80))
 
     def __init__(self,name,model_type,model_path,dataset_path):
         self.name = name
+        self.meta = {}
         self.model_type = model_type
         self.model_path = model_path
         self.dataset_path = dataset_path
@@ -19,6 +22,7 @@ class EvalModel(db.Model):
         return {"eval_id":self.eval_id,
         "name":self.name,
         "model_type":self.model_type,
+        "metadata":self.meta,
         "model_path":self.model_path,
         "dataset_path":self.dataset_path}
 
