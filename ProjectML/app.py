@@ -13,7 +13,7 @@ from models.evaluation import EvalModel
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'abhishek'
+app.secret_key = '#521637819082308ryfbbjdwd89'
 api = Api(app)
 
 @app.before_first_request
