@@ -21,22 +21,22 @@
           <th>Evaluation_id</th>
           <th>Name</th>
           <th>Model type</th>
-          <th>Metadata</th>
           <th>Model path</th>
           <th>Dataset path</th>
+          <th>Actions</th>
         </tr>
         {% for evaluation in entities %}
           <tr>
             <td>{{evaluation.eval_id}}</td>
             <td>{{evaluation.name}}</td>
             <td>{{evaluation.model_type}}</td>
+            <td>{{evaluation.model_path | reverse_by_word}}</td>
+            <td>{{evaluation.dataset_path | reverse_by_word}}</td>
             {% if evaluation.model_type == 'classification' %}
               <td> <a href="/evaluate/classification/{{evaluation.eval_id}}">Visualise_C</a></td>
             {% else %}
               <td> <a href="/evaluate/regression/{{evaluation.eval_id}}">Visualise_R</a></td>
             {% endif %}
-            <td>{{evaluation.model_path}}</td>
-            <td>{{evaluation.dataset_path}}</td>
           </tr>
         {% endfor %}
       </table>

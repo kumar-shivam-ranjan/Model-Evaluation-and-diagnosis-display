@@ -41,7 +41,45 @@
                        <div class="alert alert-light" role="alert">
                          <h3>Model Evaluation Results</h3>
                        </div>
+                       <div class="container">
+                         <!-- Tab links -->
+                         <div class="tab">
+                           <button class="tablinks" onclick="ChangeTab(event, 'Details')">Details</button>
+                           <button class="tablinks" onclick="ChangeTab(event, 'Tags')">Tags</button>
+                         </div>
 
+                         <!-- Tab content -->
+                         <div id="Details" class="tabcontent">
+                           <div class="container-fluid">
+                             <div class="row">
+                               <div class="col">
+                                 <p><strong>Name: </strong>{{name}}</p>
+                               </div>
+                               <div class="col">
+                                 <p><strong>Model Type: </strong>{{model_type}}</p>
+                               </div>
+                             </div>
+                             <div class="row">
+                               <div class="col">
+                                 <p><strong>Status: </strong></p>
+                               </div>
+                               <div class="col">
+                                 <p><strong>Date Created: </strong></p>
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+
+                         <div id="Tags" class="tabcontent">
+                           <p>Tags related to this evaluation</p>
+                           <ul>
+                             <li>Tag1</li>
+                             <li>Tag2</li>
+                             <li>Tag3</li>
+                             <li>Tag4</li>
+                           </ul>
+                         </div>
+                       </div>
                      </div>
                  </div>
              </div>
@@ -51,6 +89,12 @@
       </div>
 
       <canvas id="myChart" aria-label="chart" role="img" width="900" height="500"></canvas>
+      <br>
+      <div class="text-center">
+        <a type="button" class="btn btn-primary" name="list_of_all" href="/evaluatelist">List all evaluations</a>
+      </div>
+      <br>
+      <br>
       <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.0/dist/chart.min.js"></script>
       <script >
           var metrics=[];
@@ -103,6 +147,26 @@
             }
 
           });
+          function ChangeTab(evt, _id) {
+              // Declare all variables
+              var i, tabcontent, tablinks;
+
+              // Get all elements with class="tabcontent" and hide them
+              tabcontent = document.getElementsByClassName("tabcontent");
+              for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+              }
+
+              // Get all elements with class="tablinks" and remove the class "active"
+              tablinks = document.getElementsByClassName("tablinks");
+              for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+              }
+
+              // Show the current tab, and add an "active" class to the button that opened the tab
+              document.getElementById(_id).style.display = "block";
+              evt.currentTarget.className += " active";
+          }
       </script>
 
 
