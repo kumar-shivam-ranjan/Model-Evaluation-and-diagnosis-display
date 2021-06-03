@@ -7,7 +7,7 @@ import requests
 import pickle
 from sklearn import metrics
 import csv
-from flask import Flask,request,render_template,redirect,url_for
+from flask import Flask,request,render_template,redirect,url_for, Response
 from resources.evaluation import Evaluate, EvaluateList
 from models.evaluation import EvalModel
 
@@ -34,38 +34,14 @@ def dashboard():
 	result = []
 	for evaluation in evaluation_entities:
 		item = evaluation
-		# if item['metadata']:
-		# 	item['metadata'] = eval(item['metadata'])
 		result.append(item)
 	return render_template('all_evaluations.html',entities=result)
 
-@app.route("/regression",methods=["GET","POST"])
-def new_regression_eval():
+@app.route("/neweval",methods=["GET","POST"])
+def new_eval():
 	if request.method == "GET":
-		return render_template("regression.html")
+		return render_template("evalform.html")
 	else:
-		hostaddr = request.host
-		name = request.form['name']
-		model_type = request.form['model_type']
-		model_path = request.form['model_path']
-		dataset_path = request.form['dataset_path']
-		payload = {
-			"name":name,
-			"model_type":model_type,
-			"model_path":model_path,
-			"dataset_path":dataset_path
-		}
-		headers = {'Content-Type':'application/json'}
-		r = requests.post('http://'+hostaddr+'/evaluate',headers=headers,data=payload)
-		return redirect(url_for("regression_list")), 307
-	return {"message":"An error occured"}
-
-@app.route("/classification",methods=["GET","POST"])
-def new_classification_eval():
-	if request.method == "GET":
-		return render_template("classification.html")
-	else:
-		print('hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
 		hostaddr = request.host
 		name = request.form['name']
 		model_type = request.form['model_type']
@@ -78,35 +54,9 @@ def new_classification_eval():
 			"dataset_path":dataset_path
 		}
 		r = requests.post('http://'+hostaddr+'/evaluate',data=payload)
-		return redirect(url_for("classification_list"))
+		return redirect(url_for("dashboard"))
 	return {"message":"An error occured"}
 
-@app.route("/regressionlist")
-def regression_list():
-	hostaddr = request.host
-	r = requests.get('http://'+hostaddr+'/evaluate')
-	evaluation_entities = r.json()['evaluation_entities']
-	result = []
-	for evaluation in evaluation_entities:
-		if evaluation['model_type']=='regression':
-			item = evaluation
-			print(item,type(item))
-			# if item['metadata']:
-			# 	item['metadata'] = eval(item['metadata'])
-			result.append(item)
-	return render_template('regressionlist.html',entities=result)
-
-@app.route("/classificationlist",methods=['GET','POST'])
-def classification_list():
-	hostaddr = request.host
-	r = requests.get('http://'+hostaddr+'/evaluate')
-	evaluation_entities = r.json()['evaluation_entities']
-	result = []
-	for evaluation in evaluation_entities:
-		if evaluation['model_type']=='classification':
-			item = evaluation
-			result.append(item)
-	return render_template('classificationlist.html',entities=result)
 
 @app.route("/evaluate/regression/<int:eval_id>")
 def evaluate_regression(eval_id):
@@ -116,8 +66,6 @@ def evaluate_regression(eval_id):
 	metrics = eval_dict["metadata"]
 	print(metrics,type(metrics))
 	if metrics:
-		# metrics = eval(metrics)
-
 		return render_template("evaluate_regression.html",
 			mae=metrics["mean_absolute_error"],
 			mse=metrics["mean_squared_error"],
@@ -130,16 +78,12 @@ def evaluate_regression(eval_id):
 
 
 
-
-
-
 @app.route("/evaluate/classification/<int:eval_id>")
 def evaluate_classification(eval_id):
 	hostaddr = request.host
 	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
 	eval_dict = r.json()
 	metrics = eval_dict["metadata"]
-	print(metrics,type(metrics),'HII SHIVAM')
 	if metrics:
 		return render_template("evaluate_classification.html",
 			id=eval_id,
@@ -159,7 +103,6 @@ def evaluate_classification_auc(eval_id):
 	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
 	eval_dict = r.json()
 	metrics = eval_dict["metadata"]
-	print(metrics,type(metrics),'HII SHIVAM')
 	if metrics:
 		return render_template("evaluate_auc.html",
 			id=eval_id,
@@ -169,6 +112,16 @@ def evaluate_classification_auc(eval_id):
 		)
 	return {"message":"metrics are empty"}
 
+@app.route("/evaluate/classification/<int:eval_id>/cmatrix")
+def evaluate_confusion_matrix(eval_id):
+	hostaddr = request.host
+	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
+	eval_dict = r.json()
+	metrics = eval_dict["metadata"]
+	if metrics:
+		print(metrics['confusion_matrix'])
+		return render_template("evaluate_confusion_matrix.html",id=eval_id,cmatrix=metrics['confusion_matrix'])
+	return {"message":"metrics are empty"}
 
 
 api.add_resource(Evaluate,"/evaluate/<int:eval_id>")

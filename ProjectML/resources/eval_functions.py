@@ -43,8 +43,10 @@ class EvaluationFunctions():
 		roc_auc = metrics.roc_auc_score(y_actual, probs)
 		precision_curve, recall_curve, _ = metrics.precision_recall_curve(y_actual, probs)
 		precision_recall_auc=metrics.auc(recall_curve,precision_curve)
-		#print(precision_recall_auc,type(precision_recall_auc))
-		print(fpr,type(fpr))
+
+		# Confusion matrix
+		cmatrix = metrics.confusion_matrix(y_actual,y_pred)
+		cmatrix = cmatrix.tolist()
 		fpr=fpr.tolist()
 		tpr=tpr.tolist()
 		precision_curve=precision_curve.tolist()
@@ -59,7 +61,8 @@ class EvaluationFunctions():
 		"roc_auc":roc_auc,
 		"precision_curve":precision_curve,
 		"recall_curve":recall_curve,
-		"precision_recall_auc":precision_recall_auc
+		"precision_recall_auc":precision_recall_auc,
+		"confusion_matrix":cmatrix
 		}
 
 	def evaluate_regression(self):

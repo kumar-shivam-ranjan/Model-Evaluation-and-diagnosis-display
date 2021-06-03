@@ -30,13 +30,17 @@
             <td>{{evaluation.eval_id}}</td>
             <td>{{evaluation.name}}</td>
             <td>{{evaluation.model_type}}</td>
-            <td>{{evaluation.metadata}}</td>
+            {% if evaluation.model_type == 'classification' %}
+              <td> <a href="/evaluate/classification/{{evaluation.eval_id}}">Visualise_C</a></td>
+            {% else %}
+              <td> <a href="/evaluate/regression/{{evaluation.eval_id}}">Visualise_R</a></td>
+            {% endif %}
             <td>{{evaluation.model_path}}</td>
             <td>{{evaluation.dataset_path}}</td>
           </tr>
         {% endfor %}
       </table>
-      <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+      <a class="btn btn-primary btn-lg" href="/neweval" role="button">Add evaluation</a>
     </div>
 
 

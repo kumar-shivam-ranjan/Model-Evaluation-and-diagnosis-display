@@ -30,7 +30,6 @@ class Evaluate(Resource):
 
     def get(self,eval_id):
         evaluation_entity = EvalModel.find_by_id(eval_id)
-        print(evaluation_entity.meta,'HIIIII_SHIVAM')
         if evaluation_entity:
             if evaluation_entity.meta:
                 return evaluation_entity.json()

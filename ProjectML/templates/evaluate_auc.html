@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
     <body>
-  
+
       <div id="wrapper">
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
@@ -29,10 +29,13 @@
                 <li>
                     <a href="/evaluate/pr_curve">Precision vs Recall</a>
                 </li>
-                
+                <li>
+                    <a href="/evaluate/classification/{{id}}/cmatrix">Confusion Matrix</a>
+                </li>
+
             </ul>
         </div>
-  
+
         <div id="page-content-wrapper">
             <div class="container-fluid">
                 <div class="row">
@@ -41,17 +44,17 @@
                         <h3>Model Evaluation Results</h3>
                         <h3>{{auc}}</h3>
                       </div>
-                       
+
                     </div>
                 </div>
             </div>
         </div>
-       
+
 
     </div>
-   
-    
-  
+
+
+
 
 
 
@@ -92,7 +95,7 @@
 
           });
 
-          
+
 
        </script>
   </body>
