@@ -21,10 +21,6 @@ api = Api(app)
 def create_tables():
 	db.create_all()
 
-# import os
-# cwd=os.getcwd()
-# print(cwd)
-# app.config["UPLOAD_PATH"]=cwd
 
 @app.route("/")
 def index_page():
@@ -69,6 +65,7 @@ def new_classification_eval():
 	if request.method == "GET":
 		return render_template("classification.html")
 	else:
+		print('hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
 		hostaddr = request.host
 		name = request.form['name']
 		model_type = request.form['model_type']
@@ -80,9 +77,8 @@ def new_classification_eval():
 			"model_path":model_path,
 			"dataset_path":dataset_path
 		}
-		headers = {'Content-Type':'application/json'}
-		r = requests.post('http://'+hostaddr+'/evaluate',headers=headers,data=payload)
-		return redirect(url_for("classification_list")), 307
+		r = requests.post('http://'+hostaddr+'/evaluate',data=payload)
+		return redirect(url_for("classification_list"))
 	return {"message":"An error occured"}
 
 @app.route("/regressionlist")
@@ -100,7 +96,7 @@ def regression_list():
 			result.append(item)
 	return render_template('regressionlist.html',entities=result)
 
-@app.route("/classificationlist")
+@app.route("/classificationlist",methods=['GET','POST'])
 def classification_list():
 	hostaddr = request.host
 	r = requests.get('http://'+hostaddr+'/evaluate')
@@ -109,8 +105,6 @@ def classification_list():
 	for evaluation in evaluation_entities:
 		if evaluation['model_type']=='classification':
 			item = evaluation
-			if item['metadata']:
-				item['metadata'] = eval(item['metadata'])
 			result.append(item)
 	return render_template('classificationlist.html',entities=result)
 
@@ -134,15 +128,21 @@ def evaluate_regression(eval_id):
 		)
 	return {"message":"metrics are empty"}
 
+
+
+
+
+
 @app.route("/evaluate/classification/<int:eval_id>")
-def evaluate_classification():
+def evaluate_classification(eval_id):
 	hostaddr = request.host
 	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
 	eval_dict = r.json()
 	metrics = eval_dict["metadata"]
-	print(metrics,type(metrics))
+	print(metrics,type(metrics),'HII SHIVAM')
 	if metrics:
 		return render_template("evaluate_classification.html",
+			id=eval_id,
 			acc=metrics["accuracy_score"],
 			precision_score=metrics["precision_score"],
 			recall=metrics["recall"],
@@ -150,7 +150,26 @@ def evaluate_classification():
 			log_loss=metrics["log_loss"]
 		)
 	return {"message":"metrics are empty"}
-	# return render_template('regressionlist.html',entities=result)
+
+
+
+@app.route("/evaluate/classification/<int:eval_id>/auc")
+def evaluate_classification_auc(eval_id):
+	hostaddr = request.host
+	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
+	eval_dict = r.json()
+	metrics = eval_dict["metadata"]
+	print(metrics,type(metrics),'HII SHIVAM')
+	if metrics:
+		return render_template("evaluate_auc.html",
+			id=eval_id,
+			fpr=metrics["fpr"],
+			tpr=metrics["tpr"],
+			auc=metrics["roc_auc"]
+		)
+	return {"message":"metrics are empty"}
+
+
 
 api.add_resource(Evaluate,"/evaluate/<int:eval_id>")
 api.add_resource(EvaluateList,"/evaluate")
@@ -158,4 +177,3 @@ api.add_resource(EvaluateList,"/evaluate")
 if __name__=="__main__":
 	db.init_app(app)
 	app.run(debug=True)
-

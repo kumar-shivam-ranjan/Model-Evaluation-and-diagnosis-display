@@ -30,10 +30,9 @@
             <td>{{evaluation.eval_id}}</td>
             <td>{{evaluation.name}}</td>
             <td>{{evaluation.model_type}}</td>
-            <td>{{evaluation.metadata}}</td>
+            <td> <a href="/evaluate/classification/{{evaluation.eval_id}}">Visualise</a></td>
             <td>{{evaluation.model_path}}</td>
             <td>{{evaluation.dataset_path}}</td>
-            <td><a href="/evaluate/classification/{{evaluation.eval_id}}">Get Metrics</a></td>
           </tr>
         {% endfor %}
       </table>
