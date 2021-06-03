@@ -38,12 +38,29 @@ class EvaluationFunctions():
 		recall=metrics.recall_score(y_actual,y_pred)
 		f1=metrics.f1_score(y_actual,y_pred)
 		log_loss=metrics.log_loss(y_actual,probs)
-
+		probs=probs[::,1]
+		fpr, tpr, _ = metrics.roc_curve(y_actual,  probs)
+		roc_auc = metrics.roc_auc_score(y_actual, probs)
+		precision_curve, recall_curve, _ = metrics.precision_recall_curve(y_actual, probs)
+		precision_recall_auc=metrics.auc(recall_curve,precision_curve)
+		#print(precision_recall_auc,type(precision_recall_auc))
+		print(fpr,type(fpr))
+		fpr=fpr.tolist()
+		tpr=tpr.tolist()
+		precision_curve=precision_curve.tolist()
+		recall_curve=recall_curve.tolist()
 		return {"accuracy_score":acc,
 		"precision_score":precision_score,
 		"recall":recall,
 		"f1-score":f1,
-		"log_loss":log_loss}
+		"log_loss":log_loss,
+		"fpr":fpr,
+		"tpr":tpr,
+		"roc_auc":roc_auc,
+		"precision_curve":precision_curve,
+		"recall_curve":recall_curve,
+		"precision_recall_auc":precision_recall_auc
+		}
 
 	def evaluate_regression(self):
 		model_file=self.model_path
