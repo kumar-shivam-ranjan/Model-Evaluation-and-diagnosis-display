@@ -152,6 +152,29 @@ def evaluate_confusion_matrix(eval_id):
 	return {"message":"metrics are empty"}
 
 
+@app.route("/evaluate/classification/<int:eval_id>/prc")
+def evaluate_precision_recall_curve(eval_id):
+	hostaddr = request.host
+	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
+	eval_dict = r.json()
+	metrics = eval_dict["metadata"]
+	name = eval_dict["name"]
+	model_type = eval_dict["model_type"]
+	if metrics:
+		return render_template("evaluate_precision_recall_curve.html",
+			name=name,
+			model_type=model_type,
+			id=eval_id,
+			precision_curve=metrics['precision_curve'],
+			recall_curve=metrics['recall_curve'],
+			precision_recall_auc=metrics['precision_recall_auc']
+		)
+	return {"message":"metrics are empty"}
+
+
+
+
+
 api.add_resource(Evaluate,"/evaluate/<int:eval_id>")
 api.add_resource(EvaluateList,"/evaluate")
 
