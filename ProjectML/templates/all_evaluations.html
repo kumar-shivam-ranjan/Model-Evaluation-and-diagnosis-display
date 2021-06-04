@@ -15,16 +15,16 @@
 
 
     <div class="jumbotron">
-      <h1 class="display-4">List of Evaluations</h1>
-      <table border=1>
-        <tr>
+      <div class="text-center"><h1 class="display-4">List of Evaluations</h1></div>
+      <table class="table" border=1>
+        <thead class="table-dark">
           <th>Evaluation_id</th>
           <th>Name</th>
           <th>Model type</th>
           <th>Model path</th>
           <th>Dataset path</th>
           <th>Actions</th>
-        </tr>
+        </thead>
         {% for evaluation in entities %}
           <tr>
             <td>{{evaluation.eval_id}}</td>
@@ -40,8 +40,9 @@
           </tr>
         {% endfor %}
       </table>
-      <a class="btn btn-primary btn-lg" href="/neweval" role="button">Add evaluation</a>
+      <div class="text-center"><a class="btn btn-primary btn-lg" href="/neweval" role="button">Add evaluation</a>
     </div>
+  </div>
 
 
 
