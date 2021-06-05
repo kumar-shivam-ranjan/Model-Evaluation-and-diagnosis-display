@@ -1,6 +1,7 @@
 from db import db
 from sqlalchemy.dialects.postgresql import JSON
-
+from sqlalchemy.sql import func
+import datetime
 class EvalModel(db.Model):
     __tablename__ = 'Evaluations'
 
@@ -10,6 +11,7 @@ class EvalModel(db.Model):
     meta = db.Column(JSON)
     model_path = db.Column(db.String(80))
     dataset_path = db.Column(db.String(80))
+    date_created = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self,name,model_type,model_path,dataset_path):
         self.name = name
@@ -24,7 +26,8 @@ class EvalModel(db.Model):
         "model_type":self.model_type,
         "metadata":self.meta,
         "model_path":self.model_path,
-        "dataset_path":self.dataset_path}
+        "dataset_path":self.dataset_path,
+        "date_created":str(self.date_created)}
 
     @classmethod
     def find_by_type(cls, type):

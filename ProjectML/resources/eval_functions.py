@@ -23,18 +23,22 @@ class EvaluationFunctions():
 			for row in csv_reader:
 				list_of_column_names.append(row)
 				break
-		print(list_of_column_names[0])
 		path = r'%s' % model_file
 		loaded_model = pickle.load(open(path, 'rb'))
+		feature_scores=[]
+		key = "coef_"
+		if key in loaded_model.__dict__.keys():
+			feature_scores=loaded_model.coef_[0]
+		else:
+			feature_scores=loaded_model.feature_importances_
 		col_names = list_of_column_names[0]
 		pima=pd.read_csv(dataset_file,header=None,names=col_names,skiprows=1)
 		feature_cols=col_names[0:-1]
 		label=col_names[-1]
 		x=pima[feature_cols]
-		print(self.model_type)
-		print(feature_cols)
 		y_pred=loaded_model.predict(x)
 		probs=loaded_model.predict_proba(x)
+		print(loaded_model.get_params())
 		y_actual=pima[label]
 
 		acc=metrics.accuracy_score(y_actual,y_pred)
@@ -55,6 +59,8 @@ class EvaluationFunctions():
 		tpr=tpr.tolist()
 		precision_curve=precision_curve.tolist()
 		recall_curve=recall_curve.tolist()
+		columns=feature_cols
+		feature_scores=feature_scores.tolist()
 		return {"accuracy_score":acc,
 		"precision_score":precision_score,
 		"recall":recall,
@@ -66,15 +72,14 @@ class EvaluationFunctions():
 		"precision_curve":precision_curve,
 		"recall_curve":recall_curve,
 		"precision_recall_auc":precision_recall_auc,
-		"confusion_matrix":cmatrix
+		"confusion_matrix":cmatrix,
+		"feature_scores":feature_scores,
+		"columns":columns
 		}
 
 	def evaluate_regression(self):
 		model_file=self.model_path
 		dataset_file=self.dataset_path
-
-		print(model_file)
-		print(dataset_file)
 
 		with open(dataset_file) as csv_file:
 			csv_reader = csv.reader(csv_file, delimiter = ',')
@@ -84,14 +89,19 @@ class EvaluationFunctions():
 				break
 		print(list_of_column_names[0])
 		loaded_model = pickle.load(open(model_file, 'rb'))
+
+		key = "coef_"
+		if key in loaded_model.__dict__.keys():
+			feature_scores=loaded_model.coef_
+		else:
+			feature_scores=loaded_model.feature_importances_
+
 		col_names = list_of_column_names[0]
 		dataset=pd.read_csv(dataset_file,header=None,names=col_names,skiprows=1)
 
 		feature_cols= col_names[0:-1]
 		label=col_names[-1]
 
-		print(feature_cols)
-		print(label)
 		X = dataset.loc[:,feature_cols]
 		print(X.shape)
 		y_test_pred=loaded_model.predict(X)
@@ -122,11 +132,18 @@ class EvaluationFunctions():
 		rmse = np.sqrt(metrics.mean_squared_error(y_test, y_test_pred))
 		rmsle = np.sqrt(metrics.mean_squared_log_error( y_test_new, y_pred ))
 
+		# print(feature_scores, type(feature_scores))
+		# print(columns, type(columns))
+		columns=feature_cols
+		feature_scores=feature_scores.tolist()
+
 		return {
 			"Coefficient_of_Determination":r2,
 			"Adjusted_r_squared":ar2,
 			"mean_absolute_error":mae,
 			"mean_squared_error":mse,
 			"root_mean_squared_error":rmse,
-			"root_mean_squared_log_error":rmsle
+			"root_mean_squared_log_error":rmsle,
+			"feature_scores":feature_scores,
+			"columns":col_names
 		}

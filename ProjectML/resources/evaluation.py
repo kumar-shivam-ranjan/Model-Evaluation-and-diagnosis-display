@@ -47,6 +47,12 @@ class Evaluate(Resource):
 
         return {"message":"Requested evaluation entity doesn't exist"}, 404
 
+    def delete(self,eval_id):
+        evaluation_entity = EvalModel.find_by_id(eval_id)
+        if evaluation_entity:
+            evaluation_entity.delete_from_db()
+        return {"message":"Evaluation removed"}
+
 
 class EvaluateList(Resource):
     parser = reqparse.RequestParser()

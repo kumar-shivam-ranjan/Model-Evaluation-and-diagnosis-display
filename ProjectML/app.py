@@ -71,14 +71,18 @@ def new_eval():
 def evaluate_regression(eval_id):
 	hostaddr = request.host
 	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
+	# print(r)
 	eval_dict = r.json()
 	metrics = eval_dict["metadata"]
 	name = eval_dict["name"]
 	model_type = eval_dict["model_type"]
+	timestamp = eval_dict["date_created"]
 	if metrics:
 		return render_template("evaluate_regression.html",
+			id=eval_id,
 			name=name,
 			model_type=model_type,
+			timestamp=timestamp,
 			mae=metrics["mean_absolute_error"],
 			mse=metrics["mean_squared_error"],
 			rmse=metrics["root_mean_squared_error"],
@@ -94,14 +98,17 @@ def evaluate_regression(eval_id):
 def evaluate_classification(eval_id):
 	hostaddr = request.host
 	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
+	# print(r)
 	eval_dict = r.json()
 	metrics = eval_dict["metadata"]
 	name = eval_dict["name"]
 	model_type = eval_dict["model_type"]
+	timestamp = eval_dict["date_created"]
 	if metrics:
 		return render_template("evaluate_classification.html",
 			name=name,
 			model_type=model_type,
+			timestamp=timestamp,
 			id=eval_id,
 			acc=metrics["accuracy_score"],
 			precision_score=metrics["precision_score"],
@@ -117,14 +124,17 @@ def evaluate_classification(eval_id):
 def evaluate_classification_auc(eval_id):
 	hostaddr = request.host
 	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
+	# print(r)
 	eval_dict = r.json()
 	metrics = eval_dict["metadata"]
 	name = eval_dict["name"]
 	model_type = eval_dict["model_type"]
+	timestamp = eval_dict["date_created"]
 	if metrics:
 		return render_template("evaluate_auc.html",
 			name=name,
 			model_type=model_type,
+			timestamp=timestamp,
 			id=eval_id,
 			fpr=metrics["fpr"],
 			tpr=metrics["tpr"],
@@ -140,11 +150,13 @@ def evaluate_confusion_matrix(eval_id):
 	metrics = eval_dict["metadata"]
 	name = eval_dict["name"]
 	model_type = eval_dict["model_type"]
+	timestamp = eval_dict["date_created"]
 	if metrics:
 		print(metrics['confusion_matrix'])
 		return render_template("evaluate_confusion_matrix.html",
 			name=name,
 			model_type=model_type,
+			timestamp=timestamp,
 			id=eval_id,
 			cmatrix=metrics['confusion_matrix']
 		)
@@ -159,10 +171,12 @@ def evaluate_precision_recall_curve(eval_id):
 	metrics = eval_dict["metadata"]
 	name = eval_dict["name"]
 	model_type = eval_dict["model_type"]
+	timestamp = eval_dict["date_created"]
 	if metrics:
 		return render_template("evaluate_precision_recall_curve.html",
 			name=name,
 			model_type=model_type,
+			timestamp=timestamp,
 			id=eval_id,
 			precision_curve=metrics['precision_curve'],
 			recall_curve=metrics['recall_curve'],
@@ -170,8 +184,30 @@ def evaluate_precision_recall_curve(eval_id):
 		)
 	return {"message":"metrics are empty"}
 
+@app.route("/evaluate/<int:eval_id>/featimp")
+def feature_importance(eval_id):
+	hostaddr = request.host
+	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
+	eval_dict = r.json()
+	metrics = eval_dict["metadata"]
+	model_type = eval_dict["model_type"]
+	name = eval_dict["name"]
+	timestamp = eval_dict["date_created"]
+	if metrics:
+		return render_template("feature_importance.html",
+			id=eval_id,
+			name=name,
+			timestamp=timestamp,
+			model_type=model_type,
+			feature_scores=metrics["feature_scores"],
+			columns=metrics["columns"]
+		)
 
-
+@app.route("/evaluate/<int:eval_id>/delete")
+def delete_evaluation(eval_id):
+	hostaddr = request.host
+	r = requests.delete('http://'+hostaddr+'/evaluate/'+str(eval_id))
+	return redirect(url_for("dashboard"))
 
 
 api.add_resource(Evaluate,"/evaluate/<int:eval_id>")

@@ -28,7 +28,7 @@
                  <a href="#">Visualise Metrics</a>
                  </li>
                  <li>
-                     <a href="#">Feature Importance</a>
+                     <a href="/evaluate/{{id}}/featimp">Feature Importance</a>
                  </li>
 
              </ul>
@@ -63,7 +63,7 @@
                                  <p><strong>Status: </strong></p>
                                </div>
                                <div class="col">
-                                 <p><strong>Date Created: </strong></p>
+                                 <p><strong>Date Created: </strong>{{timestamp}}</p>
                                </div>
                              </div>
                            </div>
@@ -87,14 +87,51 @@
 
       </div>
 
-      <canvas id="myChart" aria-label="chart" role="img" width="900" height="500"></canvas>
+      <table class="table table-bordered" style="width: 300px;margin-right:100px;margin-top:20px" align="right">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Metrcics</th>
+            <th scope="col">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">MAE</th>
+            <td >{{'%0.2f'| format(mae|float)}}</td>
+          </tr>
+          <tr>
+            <th scope="row">MSE</th>
+            <td>{{'%0.2f'| format(mse|float)}}</td>
+          </tr>
+          <tr>
+            <th scope="row">RMSE</th>
+            <td>{{'%0.2f'| format(rmse|float)}}</td>
+          </tr>
+          <tr>
+            <th scope="row">RMSLE</th>
+            <td>{{'%0.2f'| format(rmsle|float)}}</td>
+          </tr>
+          <tr>
+            <th scope="row">R^2</th>
+            <td>{{'%0.2f'| format(r2|float)}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Adjusted R^2</th>
+            <td>{{'%0.2f'| format(ar2|float)}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <canvas id="myChart" aria-label="chart" role="img" width="750" height="350"></canvas>
       <br>
-      <div class="text-center">
-        <a type="button" class="btn btn-primary" name="list_of_all" href="/evaluatelist">List all evaluations</a>
-      </div>
       <br>
       <br>
       <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.0/dist/chart.min.js"></script>
+
+      <div class="text-center" style="margin-left:300px">
+        <a type="button" class="btn btn-primary" name="list_of_all" href="/evaluatelist">List all evaluations</a>
+      </div>
+
       <script >
           var metrics=[];
           metrics.push({{mae}});
