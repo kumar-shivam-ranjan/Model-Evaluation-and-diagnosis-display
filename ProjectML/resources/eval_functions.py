@@ -24,15 +24,19 @@ class EvaluationFunctions():
 				list_of_column_names.append(row)
 				break
 		print(list_of_column_names[0])
-		loaded_model = pickle.load(open(model_file, 'rb'))
+		path = r'%s' % model_file
+		loaded_model = pickle.load(open(path, 'rb'))
 		col_names = list_of_column_names[0]
 		pima=pd.read_csv(dataset_file,header=None,names=col_names,skiprows=1)
 		feature_cols=col_names[0:-1]
 		label=col_names[-1]
 		x=pima[feature_cols]
+		print(self.model_type)
+		print(feature_cols)
 		y_pred=loaded_model.predict(x)
 		probs=loaded_model.predict_proba(x)
 		y_actual=pima[label]
+
 		acc=metrics.accuracy_score(y_actual,y_pred)
 		precision_score=metrics.precision_score(y_actual,y_pred)
 		recall=metrics.recall_score(y_actual,y_pred)
