@@ -24,7 +24,8 @@ class EvaluationFunctions():
 				list_of_column_names.append(row)
 				break
 		print(list_of_column_names[0])
-		loaded_model = pickle.load(open(model_file, 'rb'))
+		path = r'%s' % model_file
+		loaded_model = pickle.load(open(path, 'rb'))
 		col_names = list_of_column_names[0]
 		pima=pd.read_csv(dataset_file,header=None,names=col_names,skiprows=1)
 		feature_cols=col_names[0:-1]
@@ -83,7 +84,7 @@ class EvaluationFunctions():
 		col_names = list_of_column_names[0]
 		dataset=pd.read_csv(dataset_file,header=None,names=col_names,skiprows=1)
 
-		feature_cols= ['ZN', 'INDUS', 'RM', 'AGE', 'DIS', 'TAX', 'PTRATIO', 'LSTAT']
+		feature_cols= col_names[0:-1]
 		label=col_names[-1]
 
 		print(feature_cols)
