@@ -30,6 +30,7 @@ class Evaluate(Resource):
 
     def get(self,eval_id):
         evaluation_entity = EvalModel.find_by_id(eval_id)
+
         if evaluation_entity:
             if evaluation_entity.meta:
                 return evaluation_entity.json()
@@ -37,9 +38,10 @@ class Evaluate(Resource):
             evaluation_object = EvaluationFunctions(eval_dict['model_type'], eval_dict['model_path'], eval_dict['dataset_path'])
             if eval_dict['model_type'] == 'regression':
                 metrics = evaluation_object.evaluate_regression()
+                evaluation_entity.meta = metrics
             else:
                 metrics = evaluation_object.evaluate_classification()
-            evaluation_entity.meta = metrics
+                evaluation_entity.meta = metrics
             evaluation_entity.save_to_db()
             return evaluation_entity.json()
 

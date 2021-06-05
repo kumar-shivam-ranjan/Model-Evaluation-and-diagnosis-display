@@ -16,7 +16,7 @@
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
                     <a href="#">
-                        Model Evaluation
+                        Model Evaluation Results
                     </a>
                 </li>
                 <li>
@@ -43,7 +43,6 @@
                 <div class="row">
                     <div class="col-lg-12">
                       <div class="alert alert-light" role="alert">
-                        <h3>Model Evaluation Results</h3>
                       </div>
                       <div class="container">
                         <!-- Tab links -->
@@ -75,12 +74,9 @@
                         </div>
 
                         <div id="Tags" class="tabcontent">
-                          <p>Tags related to this evaluation</p>
                           <ul>
                             <li>Tag1</li>
                             <li>Tag2</li>
-                            <li>Tag3</li>
-                            <li>Tag4</li>
                           </ul>
                         </div>
                       </div>
@@ -88,25 +84,52 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 
 
+  <table class="table table-bordered" style="width: 300px;margin-right:100px;margin-top:20px" align="right">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Metrcics</th>
+      <th scope="col">Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Accuracy</th>
+      <td >{{'%0.2f'| format(acc|float)}}</td>
+    </tr>
+    <tr>
+      <th scope="row">Precision</th>
+      <td>{{'%0.2f'| format(precision_score|float)}}</td>
+    </tr>
+    <tr>
+      <th scope="row">Recall</th>
+      <td>{{'%0.2f'| format(recall|float)}}</td>
+    </tr>
+    <tr>
+      <th scope="row">F1 Score</th>
+      <td>{{'%0.2f'| format(f1|float)}}</td>
+    </tr>
+    <tr>
+      <th scope="row">Log Loss</th>
+      <td>{{'%0.2f'| format(log_loss|float)}}</td>
+    </tr>
+  </tbody>
+</table>
 
 
 
-      <canvas id="myChart" aria-label="chart" role="img" width="800" height="400"></canvas>
+      <canvas id="myChart" aria-label="chart" role="img" width="750" height="350"></canvas>
       <br>
-      <div class="text-center">
-        <a type="button" class="btn btn-primary" name="list_of_all" href="/evaluatelist">List all evaluations</a>
-      </div>
       <br>
       <br>
       <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.0/dist/chart.min.js"></script>
 
 
-
+      <div class="text-center" style="margin-left:300px">
+        <a type="button" class="btn btn-primary" name="list_of_all" href="/evaluatelist">List all evaluations</a>
+      </div>
 
 
       <script >

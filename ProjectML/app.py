@@ -73,7 +73,6 @@ def evaluate_regression(eval_id):
 	r = requests.get('http://'+hostaddr+'/evaluate/'+str(eval_id))
 	eval_dict = r.json()
 	metrics = eval_dict["metadata"]
-	# print(metrics,type(metrics))
 	name = eval_dict["name"]
 	model_type = eval_dict["model_type"]
 	if metrics:

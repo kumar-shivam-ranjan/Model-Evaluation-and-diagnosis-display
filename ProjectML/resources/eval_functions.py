@@ -31,9 +31,12 @@ class EvaluationFunctions():
 		feature_cols=col_names[0:-1]
 		label=col_names[-1]
 		x=pima[feature_cols]
+		print(self.model_type)
+		print(feature_cols)
 		y_pred=loaded_model.predict(x)
 		probs=loaded_model.predict_proba(x)
 		y_actual=pima[label]
+
 		acc=metrics.accuracy_score(y_actual,y_pred)
 		precision_score=metrics.precision_score(y_actual,y_pred)
 		recall=metrics.recall_score(y_actual,y_pred)
