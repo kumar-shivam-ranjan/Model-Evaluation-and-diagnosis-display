@@ -4,6 +4,8 @@ import pandas as pd
 import pickle
 from sklearn import metrics
 import csv
+import seaborn as sn
+import matplotlib.pyplot as plt
 class EvaluationFunctions():
 	def __init__(self, model_type, model_path, dataset_path):
 		self.model_path = model_path
@@ -53,6 +55,14 @@ class EvaluationFunctions():
 		precision_recall_auc=metrics.auc(recall_curve,precision_curve)
 
 		# Confusion matrix
+		mat=metrics.confusion_matrix(y_actual,y_pred)
+		classes = ["0", "1"]
+		df_cfm = pd.DataFrame(mat, index = classes, columns = classes)
+		plt.figure(figsize = (10,7))
+		cfm_plot = sn.heatmap(df_cfm, annot=True)
+		cfm_plot.figure.savefig("cfm.png")
+		########
+
 		cmatrix = metrics.confusion_matrix(y_actual,y_pred)
 		cmatrix = cmatrix.tolist()
 		fpr=fpr.tolist()
@@ -133,8 +143,6 @@ class EvaluationFunctions():
 		rmse = np.sqrt(metrics.mean_squared_error(y_test, y_test_pred))
 		rmsle = np.sqrt(metrics.mean_squared_log_error( y_test_new, y_pred ))
 
-		# print(feature_scores, type(feature_scores))
-		# print(columns, type(columns))
 		columns=feature_cols
 		feature_scores=feature_scores.tolist()
 		print(columns,type(columns),'ih')
