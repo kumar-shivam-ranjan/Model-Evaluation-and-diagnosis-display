@@ -1,4 +1,4 @@
-var margin = {top: 50, right: 50, bottom: 100, left: 500};
+var margin = {top: 20, right: 50, bottom: 500, left: 700};
 
 function Matrix(options) {
 	    var width = 250,

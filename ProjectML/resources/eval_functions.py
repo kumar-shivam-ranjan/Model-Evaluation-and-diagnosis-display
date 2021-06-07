@@ -88,7 +88,8 @@ class EvaluationFunctions():
 				list_of_column_names.append(row)
 				break
 		print(list_of_column_names[0])
-		loaded_model = pickle.load(open(model_file, 'rb'))
+		path = r'%s' % model_file
+		loaded_model = pickle.load(open(path, 'rb'))
 
 		key = "coef_"
 		if key in loaded_model.__dict__.keys():
@@ -136,7 +137,7 @@ class EvaluationFunctions():
 		# print(columns, type(columns))
 		columns=feature_cols
 		feature_scores=feature_scores.tolist()
-
+		print(columns,type(columns),'ih')
 		return {
 			"Coefficient_of_Determination":r2,
 			"Adjusted_r_squared":ar2,
