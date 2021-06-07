@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.0/dist/chart.min.js"></script>
+   <script src='https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js'></script>
+
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <title>Classification</title>
   </head>
@@ -101,46 +103,43 @@
 
 
 
-      <canvas id="lineChart" aria-label="chart" role="img" width="1000" height="400"></canvas>
-      <br>
-      <div class="text-center">
-        <a type="button" style="margin-left:200px" class="btn btn-primary" name="list_of_all" href="/evaluatelist">List all evaluations</a>
+      <!-- <canvas id="lineChart" aria-label="chart" role="img" width="1000" height="400"></canvas> -->
+      <div class="container" id="myDiv">
+
       </div>
-      <br>
-      <br>
+      <div class="text-center">
+        <a type="button" style="margin-left:250px" class="btn btn-primary" name="list_of_all" href="/evaluatelist">List all evaluations</a>
+      </div>
       <script>
 
-            var metrics={{tpr|safe}}
-            var ctx=document.getElementById("lineChart").getContext("2d");
-            var myChart=new Chart(ctx,{
+            var metrics={{fpr|safe}}
+            var data = [
+              {
+                x:metrics,
+                y:{{tpr|safe}},
+                type: 'scatter'
+              }
+            ];
+            var layout = {
+            autosize: false,
+            width: 950,
+            height: 400,
+            xaxis:{
+              title:'False Positive Rates'
+            },
+            yaxis:{
+              title:'True Positive Rates'
+            },
+            margin: {
+              l: 500,
+              b: 100,
+              t: 20,
+              pad: 10
+            },
 
-              type:"line",
-              animation: true,
-              data:{
-                labels:{{fpr|safe}},
-                datasets:[
-                  {
+          };
 
-                    data:metrics,
-                    label:"ROC Curve",
-                    fill:false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension:0.1
-                  },
-                ],
-              },
-
-              options: {
-
-                responsive: false,
-                layout:{
-                  padding:{
-                    left:500,
-                  },
-                },
-            }
-
-          });
+            Plotly.newPlot('myDiv', data, layout,{responsive:true,scrollZoom:true});
 
           function ChangeTab(evt, _id) {
               // Declare all variables

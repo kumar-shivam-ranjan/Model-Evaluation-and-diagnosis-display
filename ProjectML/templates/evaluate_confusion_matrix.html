@@ -8,6 +8,7 @@
     <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.0/dist/chart.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script src='https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js'></script>
 
 
   <title>Confusion matrix</title>
@@ -92,44 +93,38 @@
         </div>
     </div>
 
-      <div style="display:inline-block; float:left" id="container">
-
+      <div class="container" id="myDiv" style="margin-left:200px">
+    </div>
+      <br>
+      <div class="text-center"style="margin-left:200px">
+        <a type="button" class="btn btn-primary" name="list_of_all" href="/evaluatelist">List all evaluations</a>
       </div>
-
       <script>
-              var confusionMatrix =  {{cmatrix}}
-              var tp = confusionMatrix[0][0];
-              var fn = confusionMatrix[0][1];
-              var fp = confusionMatrix[1][0];
-              var tn = confusionMatrix[1][1];
-
-              var p = tp + fn;
-              var n = fp + tn;
-
-              var accuracy = (tp+tn)/(p+n);
-              var f1 = 2*tp/(2*tp+fp+fn);
-              var precision = tp/(tp+fp);
-              var recall = tp/(tp+fn);
-
-              accuracy = Math.round(accuracy * 100) / 100
-              f1 = Math.round(f1 * 100) / 100
-              precision = Math.round(precision * 100) / 100
-              recall = Math.round(recall * 100) / 100
-
-              var computedData = [];
-              computedData.push({"F1":f1, "PRECISION":precision,"RECALL":recall,"ACCURACY":accuracy});
-
-              var labels = ['Class A', 'Class B'];
-      		Matrix({
-      			container : '#container',
-      			data      : confusionMatrix,
-      			labels    : labels,
-                  start_color : '#ffffff',
-                  end_color : '#e67e22'
-      		});
+      var colorscaleValue = [
+      [0, '#3D9970'],
+      [1, '#001f3f']
+    ];
+      var data = [
+        {
+          z: {{cmatrix|safe}},
+          x:["Class A", "Class B"],
+          y:["Class B", "Class A"],
+          type: 'heatmap',
+          colorscale:colorscaleValue,
+          hoverongaps: false
+        }
+      ];
+      var layout = {
+        title: 'Confusion Matrix',
+        margin: {
+          r: 200,
+          l: 200
+        },
+      };
+      Plotly.newPlot('myDiv', data,layout);
 
 
-               var table = tabulate(computedData, ["F1", "PRECISION","RECALL","ACCURACY"]);
+
         function ChangeTab(evt, _id) {
 
             var i, tabcontent, tablinks;
