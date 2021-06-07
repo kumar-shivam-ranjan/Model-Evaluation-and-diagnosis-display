@@ -54,15 +54,6 @@ class EvaluationFunctions():
 		precision_curve, recall_curve, _ = metrics.precision_recall_curve(y_actual, probs)
 		precision_recall_auc=metrics.auc(recall_curve,precision_curve)
 
-		# Confusion matrix
-		mat=metrics.confusion_matrix(y_actual,y_pred)
-		classes = ["0", "1"]
-		df_cfm = pd.DataFrame(mat, index = classes, columns = classes)
-		plt.figure(figsize = (10,7))
-		cfm_plot = sn.heatmap(df_cfm, annot=True)
-		cfm_plot.figure.savefig("cfm.png")
-		########
-
 		cmatrix = metrics.confusion_matrix(y_actual,y_pred)
 		cmatrix = cmatrix.tolist()
 		fpr=fpr.tolist()
