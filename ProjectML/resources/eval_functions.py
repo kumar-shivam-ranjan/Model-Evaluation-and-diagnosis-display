@@ -145,5 +145,5 @@ class EvaluationFunctions():
 			"root_mean_squared_error":rmse,
 			"root_mean_squared_log_error":rmsle,
 			"feature_scores":feature_scores,
-			"columns":col_names
+			"columns":columns
 		}
