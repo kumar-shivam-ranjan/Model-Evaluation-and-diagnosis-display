@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
   <title>Feature Importance</title>
   </head>
     <body>
@@ -99,6 +100,7 @@
   <table class="table table-bordered" style="width: 300px;margin-right:100px;margin-top:20px" align="right">
   <thead class="thead-dark">
     <tr>
+      <!-- <th>Index</th> -->
       <th scope="col">Feature</th>
       <th scope="col">Feature Score</th>
     </tr>
@@ -106,6 +108,7 @@
   <tbody>
     {% for i in range(0, columns|length) %}
     <tr>
+      <!-- <th>{{i}}</th> -->
       <th scope="row">{{columns[i]}}</th>
       <td >{{'%0.2f'| format(feature_scores[i]|float)}}</td>
     </tr>
@@ -115,7 +118,10 @@
 
 
 
-      <canvas id="myChart" aria-label="chart" role="img" width="750" height="350"></canvas>
+      <!-- <canvas id="myChart" aria-label="chart" role="img" width="750" height="350"></canvas> -->
+      <div class="container" id="myDiv">
+
+      </div>
       <br>
       <br>
       <br>
@@ -126,57 +132,34 @@
         <a type="button" class="btn btn-primary" name="list_of_all" href="/evaluatelist">List all evaluations</a>
       </div>
 
+      <script src='https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js'></script>
 
       <script >
       var metrics={{feature_scores|safe}};
-      // console.log(metrics);
-      var ctx=document.getElementById("myChart").getContext("2d");
-      var myChart=new Chart(ctx,{
-
-          type:"bar",
-          data:{
-            labels:{{columns|safe}},
-            datasets:[
-              {
-
-                data:metrics,
-                label:"Classification Metrics",
-              backgroundColor: [
-                  'rgba(0, 0, 255, 0.5)',
-                  'rgba(0, 0, 255, 0.5)',
-                  'rgba(0, 0, 255, 0.5)',
-                  'rgba(0, 0, 255, 0.5)',
-                  'rgba(0, 0, 255, 0.5)',
-                  'rgba(0, 0, 255, 0.5)',
-                  'rgba(0, 0, 255, 0.5)',
-                  'rgba(0, 0, 255, 0.5)'
-               ],
-              borderColor: [
-                  'rgba(0, 0, 255, 1)',
-                  'rgba(0, 0, 255, 1)',
-                  'rgba(0, 0, 255, 1)',
-                  'rgba(0, 0, 255, 1)',
-                  'rgba(0, 0, 255, 1)',
-                  'rgba(0, 0, 255, 1)',
-                  'rgba(0, 0, 255, 1)',
-                  'rgba(0, 0, 255, 1)',
-              ],
-              borderWidth: 1
-              },
-            ],
-          },
-
-          options: {
-
-            responsive: false,
-            layout:{
-              padding:{
-                left:300,
-              },
-            },
+      var data = [
+        {
+            x: {{columns|safe}},
+            y: metrics,
+            type: 'bar'
         }
+      ];
+      var layout = {
+      title:'feature Importance',
+      autosize: false,
+      width: 650,
+      height: 500,
+      margin: {
+        l: 250,
+        // r: 50,
+        b: 100,
+        t: 100,
+        pad: 10
+      },
+      // paper_bgcolor: '#7f7f7f',
+      // plot_bgcolor: '#c7c7c7'
+    };
+    Plotly.newPlot('myDiv', data,layout,{scrollZoom: true, responsive:true});
 
-      });
           function ChangeTab(evt, _id) {
               // Declare all variables
               var i, tabcontent, tablinks;

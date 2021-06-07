@@ -13,6 +13,7 @@
       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+      <script src='https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js'></script>
 
       <div id="wrapper">
 
@@ -87,7 +88,7 @@
 
       </div>
 
-      <table class="table table-bordered" style="width: 300px;margin-right:100px;margin-top:20px" align="right">
+      <table class="table table-bordered" style="width: 300px;margin-right:100px;margin-top:60px" align="right">
         <thead class="thead-dark">
           <tr>
             <th scope="col">Metrcics</th>
@@ -122,7 +123,10 @@
         </tbody>
       </table>
 
-      <canvas id="myChart" aria-label="chart" role="img" width="750" height="350"></canvas>
+      <!-- <canvas id="myChart" aria-label="chart" role="img" width="750" height="350"></canvas> -->
+      <div class="container" id="myDiv">
+
+      </div>
       <br>
       <br>
       <br>
@@ -133,56 +137,40 @@
       </div>
 
       <script >
-          var metrics=[];
-          metrics.push({{mae}});
-          metrics.push({{mse}});
-          metrics.push({{rmse}});
-          metrics.push({{rmsle}});
-          metrics.push({{r2}});
-          metrics.push({{ar2}})
-          var ctx=document.getElementById("myChart").getContext("2d");
-          var myChart=new Chart(ctx,{
+        var metrics = []
+        metrics.push({{mae}})
+        metrics.push({{mse}})
+        metrics.push({{rmse}})
+        metrics.push({{rmsle}})
+        metrics.push({{r2}})
+        metrics.push({{ar2}})
+        colorlist= ['rgba(204,204,204,1)', 'rgba(222,0,38,1)', 'rgba(0,0,204,1)', 'rgba(100,150,4,1)', 'rgba(0,204,0,1)','rgba(98,120,65,1)']
+        var data = [
+          {
+              x: ['MAE', 'MSE', 'RMSE','RMSLE','R^2','Adjusted R^2'],
+              y: metrics,
+              type: 'bar',
+              marker: {color:colorlist}
+          }
+        ];
+        var layout = {
+        title:'Evaluation Metrics',
+        autosize: false,
+        width: 650,
+        height: 500,
+        margin: {
+          l: 250,
+          // r: 50,
+          b: 100,
+          t: 100,
+          pad: 10
+        },
+        // paper_bgcolor: '#7f7f7f',
+        // plot_bgcolor: '#c7c7c7'
+      };
 
-              type:"bar",
-              data:{
-                labels:["MAE","MSE","RMSE","RMSLE","R^2","Adjusted R^2"],
-                datasets:[
-                  {
 
-                    data:metrics,
-                    label:"Regression Metrics",
-                  backgroundColor: [
-                      'rgba(255, 99, 132, 0.2)',
-                      'rgba(54, 162, 235, 0.2)',
-                      'rgba(255, 206, 86, 0.2)',
-                      'rgba(75, 192, 192, 0.2)',
-                      'rgba(153, 102, 255, 0.2)',
-                      'rgba(140, 90, 255, 0.2)'
-                   ],
-                  borderColor: [
-                      'rgba(255, 99, 132, 1)',
-                      'rgba(54, 162, 235, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 192, 192, 1)',
-                      'rgba(153, 102, 255, 1)',
-                      'rgba(140, 90, 255, 1)'
-                  ],
-                  borderWidth: 1
-                  },
-                ],
-              },
-
-              options: {
-
-                responsive: false,
-                layout:{
-                  padding:{
-                    left:300,
-                  },
-                },
-            }
-
-          });
+        Plotly.newPlot('myDiv', data,layout,{scrollZoom: true, responsive:true});
           function ChangeTab(evt, _id) {
               // Declare all variables
               var i, tabcontent, tablinks;

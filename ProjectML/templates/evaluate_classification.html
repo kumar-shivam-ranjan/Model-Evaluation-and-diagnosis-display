@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src='https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js'></script>
+
   <title>Classification</title>
   </head>
     <body>
@@ -120,7 +122,10 @@
 
 
 
-      <canvas id="myChart" aria-label="chart" role="img" width="750" height="350"></canvas>
+      <!-- <canvas id="myChart" aria-label="chart" role="img" width="750" height="350"></canvas> -->
+      <div class="container" id="myDiv">
+
+      </div>
       <br>
       <br>
       <br>
@@ -139,49 +144,33 @@
           metrics.push({{recall}});
           metrics.push({{f1}});
           metrics.push({{log_loss}});
-          var ctx=document.getElementById("myChart").getContext("2d");
-          var myChart=new Chart(ctx,{
+          colorlist= ['rgba(204,204,204,1)', 'rgba(222,0,38,1)', 'rgba(0,0,204,1)', 'rgba(100,150,4,1)', 'rgba(0,204,0,1)']
 
-              type:"bar",
-              data:{
-                labels:["Accuracy","Precision","Recall","F1 Score","Log Loss"],
-                datasets:[
-                  {
-
-                    data:metrics,
-                    label:"Classification Metrics",
-                  backgroundColor: [
-                      'rgba(255, 99, 132, 0.2)',
-                      'rgba(54, 162, 235, 0.2)',
-                      'rgba(255, 206, 86, 0.2)',
-                      'rgba(75, 192, 192, 0.2)',
-                      'rgba(153, 102, 255, 0.2)',
-                      'rgba(140, 90, 255, 0.2)'
-                   ],
-                  borderColor: [
-                      'rgba(255, 99, 132, 1)',
-                      'rgba(54, 162, 235, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 192, 192, 1)',
-                      'rgba(153, 102, 255, 1)',
-                      'rgba(140, 90, 255, 1)'
-                  ],
-                  borderWidth: 1
-                  },
-                ],
-              },
-
-              options: {
-
-                responsive: false,
-                layout:{
-                  padding:{
-                    left:300,
-                  },
-                },
+          var data = [
+            {
+                x: ['Accuracy', 'Precision Score', 'Recall','F1-Score','Log loss'],
+                y: metrics,
+                type: 'bar',
+                marker: {color:colorlist}
             }
+          ];
+          var layout = {
+          title:'Evaluation Metrics',
+          autosize: false,
+          width: 650,
+          height: 500,
+          margin: {
+            l: 250,
+            // r: 50,
+            b: 100,
+            t: 100,
+            pad: 10
+          },
 
-          });
+        };
+
+
+          Plotly.newPlot('myDiv', data,layout,{scrollZoom: true, responsive:true});
           function ChangeTab(evt, _id) {
               // Declare all variables
               var i, tabcontent, tablinks;

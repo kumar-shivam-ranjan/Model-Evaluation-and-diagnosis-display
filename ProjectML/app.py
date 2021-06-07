@@ -12,7 +12,7 @@ from resources.evaluation import Evaluate, EvaluateList
 from models.evaluation import EvalModel
 from jinja2 import Template
 from jinja2.filters import FILTERS, environmentfilter
-from resources import Plotting
+from resources.plotting import Plotting
 
 @environmentfilter
 def do_reverse_by_word(environment, value, attribute=None):
@@ -154,16 +154,12 @@ def evaluate_confusion_matrix(eval_id):
 	model_type = eval_dict["model_type"]
 	timestamp = eval_dict["date_created"]
 	if metrics:
-		# print(metrics['confusion_matrix'])
-		plt_obj = Plotting(metrics)
-		cfm = plt_obj.plot_confusion_matrix()
 		return render_template("evaluate_confusion_matrix.html",
 			name=name,
 			model_type=model_type,
 			timestamp=timestamp,
 			id=eval_id,
-			cmatrix=metrics['confusion_matrix'],
-			cfm=cfm
+			cmatrix=metrics['confusion_matrix']
 		)
 	return {"message":"metrics are empty"}
 

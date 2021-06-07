@@ -8,6 +8,7 @@
     <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.0/dist/chart.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script src='https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js'></script>
 
 
   <title>Confusion matrix</title>
@@ -99,7 +100,11 @@
       <!-- <div style="display:inline-block; float:left" id="container">
 
       </div> -->
-      {{cfm}}
+      <div class="container" id="myDiv"
+        style="margin-left:200px"
+      >
+        <!-- <img style="margin-left:320px; object-fit:scale-down; height:500px; width:500px;" src="data:image/png;base64, {{cfm}}" alt="Red dot" /> -->
+      </div>
       <br>
       <div class="text-center">
         <a type="button" class="btn btn-primary" name="list_of_all" href="/evaluatelist">List all evaluations</a>
@@ -110,39 +115,75 @@
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
 
       <script>
-              var confusionMatrix =  {{cmatrix}}
-              var tp = confusionMatrix[0][0];
-              var fn = confusionMatrix[0][1];
-              var fp = confusionMatrix[1][0];
-              var tn = confusionMatrix[1][1];
+      var xValues = ['0','1'];
+      var yValues = ['1','0'];
 
-              var p = tp + fn;
-              var n = fp + tn;
+      var zValues = {{cmatrix|safe}}
 
-              var accuracy = (tp+tn)/(p+n);
-              var f1 = 2*tp/(2*tp+fp+fn);
-              var precision = tp/(tp+fp);
-              var recall = tp/(tp+fn);
+        var colorscaleValue = [
+          [0, '#3D9970'],
+          [1, '#001f3f']
+        ];
 
-              accuracy = Math.round(accuracy * 100) / 100
-              f1 = Math.round(f1 * 100) / 100
-              precision = Math.round(precision * 100) / 100
-              recall = Math.round(recall * 100) / 100
+        var data = [{
+          x: xValues,
+          y: yValues,
+          z: zValues,
+          type: 'heatmap',
+          colorscale: colorscaleValue,
+          showscale: false
+        }];
 
-              var computedData = [];
-              computedData.push({"F1":f1, "PRECISION":precision,"RECALL":recall,"ACCURACY":accuracy});
+        var layout = {
+          title: 'Annotated Heatmap',
+          annotations: [],
+          xaxis: {
+            ticks: '',
+            side: 'top',
+            width: 500,
+            height: 700
+          },
+          yaxis: {
+            ticks: '',
+            ticksuffix: ' ',
+            width: 500,
+            height: 700,
+            autosize: false
+          }
+        };
 
-              var labels = ['Class A', 'Class B'];
-      		Matrix({
-      			container : '#container',
-      			data      : confusionMatrix,
-      			labels    : labels,
-                  start_color : '#ffffff',
-                  end_color : '#e67e22'
-      		});
+        for ( var i = 0; i < yValues.length; i++ ) {
+          for ( var j = 0; j < xValues.length; j++ ) {
+            var currentValue = zValues[i][j];
+            if (currentValue != 0.0) {
+              var textColor = 'white';
+            }else{
+              var textColor = 'black';
+            }
+            var result = {
+              xref: 'x1',
+              yref: 'y1',
+              x: xValues[j],
+              y: yValues[i],
+              text: zValues[i][j],
+              font: {
+                family: 'Arial',
+                size: 12,
+                color: 'rgb(50, 171, 96)'
+              },
+              showarrow: false,
+              font: {
+                color: textColor
+              }
+            };
+            layout.annotations.push(result);
+          }
+        }
+
+        Plotly.newPlot('myDiv', data, layout,{responsive:true,scrollZoom:true});
 
 
-               var table = tabulate(computedData, ["F1", "PRECISION","RECALL","ACCURACY"]);
+
         function ChangeTab(evt, _id) {
 
             var i, tabcontent, tablinks;
