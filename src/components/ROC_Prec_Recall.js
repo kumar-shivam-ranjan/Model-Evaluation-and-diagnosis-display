@@ -26,37 +26,31 @@ function pushAll(metric, value, rows, x, y) {
 }
 
 export default function ROC_Prec_Recall(props){
-  const z = props.cmatrix;
-  const x = [];
-  const y = [];
-  let i;
-  for(i=0;i<props.cmatrix.length;i++)
-  {
-    let k = props.cmatrix.length - i - 1;
-    let c1 = "Class: "+i;
-    let c2 = "Class: "+k;
-    x.push(c2);
-    y.push(c2);
-  }
+  const x = props.x;
+  const y = props.y;
   // console.log(props);
+
+  let plot_title = props.curve === 0 ? "ROC Curve":"Precision-Recall Curve";
+
   const classes = useStyles();
   return(
     <div>
       <div className="row">
         <Details
-          area={1}
+          area={0}
           name={props.name}
           model_type={props.model_type}
           date_created={props.date_created}
+          area_under_curve={props.auc}
         />
       </div>
 
       <div className="row">
         <Plot className={classes.plot}
           data={[
-            {type: 'heatmap', x: x, y: y, z: z},
+            {type: 'scatter', x: x, y: y},
           ]}
-          layout={ {width: 500, height: 375, title: "Confusion Matrix"} }
+          layout={ {width: 500, height: 375, title: plot_title} }
           config={ {
             scrollZoom:true,
             respnsive:true

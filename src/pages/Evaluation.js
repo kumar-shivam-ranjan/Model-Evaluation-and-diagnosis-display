@@ -1,12 +1,19 @@
-import React, { useState, useEffect} from 'react';
-import axios from 'axios';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import useAxios from 'axios-hooks'
+
+// Components
+import Metrics from '../components/Metrics';
+import FeatureImp from '../components/FeatureImp';
+import ROC_Prec_Recall from '../components/ROC_Prec_Recall';
+import CMatrix from '../components/CMatrix';
+import ModelInfo from '../components/ModelInfo';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -53,10 +60,18 @@ const useStyles = makeStyles((theme) => ({
     width: 280,
     height: "100%",
   },
+  leftarea: {
+    backgroundColor: theme.palette.background.paper,
+    display: 'inline',
+    variant: 'fullWidth',
+    height: "100%",
+    width: "100%",
+  },
 }));
 
 export default function Evaluation(props) {
   const eval_id = props.match.params.eval_id;
+  console.log(eval_id);
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -64,22 +79,19 @@ export default function Evaluation(props) {
     setValue(newValue);
   };
 
-  const [payload, setPayload] = useState({})
-  const [search, setSearch] = useState(true);
-  useEffect(() => {
-    if(search){
-      axios.get('/evaluate/'+eval_id)
-          .then(response => setPayload(response.data));
-        setSearch(false);
-    }
-  });
+  // Fetching the data
+  let url = "/evaluate/"+eval_id;
+  // console.log(url);
 
-  console.log(payload);
+  const [{ data, loading, error }, refetch] = useAxios(url);
+  // console.log(data);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error!</p>;
 
   return (
     <div className={classes.root}>
 
-        {payload.model_type === "regression" ? (
+        {data.model_type === "regression" ? (
           <div className={classes.root}>
             <Tabs
               orientation="vertical"
@@ -116,45 +128,102 @@ export default function Evaluation(props) {
           </div>
         )}
 
-      {payload.model_type === "regression" ? (
-        <div className={classes.root}>
-          <TabPanel value={value} index={0}>
-            Item One
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            Item Two
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            Item Three
-          </TabPanel>
-          <TabPanel value={value} index={3}>
-            Item Four
-          </TabPanel>
-        </div>
+      {data.model_type === "regression" ? (
+        <>
+          <CssBaseline />
+          <div className={classes.leftarea}>
+            <TabPanel value={value} index={0}>
+              <Metrics
+                model_type={data.model_type}
+                name={data.name}
+                metadata={data.metadata}
+                date_created={data.date_created}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <ModelInfo
+                keys={data.model.metadata.keys}
+                values={data.model.metadata.values}
+                columns={data.dataset.metadata.columns}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              <FeatureImp
+                model_type={data.model_type}
+                date_created={data.date_created}
+                name={data.name}
+                feature_scores={data.metadata.feature_scores}
+                columns={data.metadata.columns}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+              Item Four
+            </TabPanel>
+          </div>
+        </>
       ) : (
-        <div className={classes.root}>
-          <TabPanel value={value} index={0}>
-            Item One
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            Item Two
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            Item Three
-          </TabPanel>
-          <TabPanel value={value} index={3}>
-            Item Four
-          </TabPanel>
-          <TabPanel value={value} index={4}>
-            Item Five
-          </TabPanel>
-          <TabPanel value={value} index={5}>
-            Item Six
-          </TabPanel>
-          <TabPanel value={value} index={6}>
-            Item Seven
-          </TabPanel>
-        </div>
+        <>
+          <CssBaseline />
+          <div className={classes.leftarea}>
+            <TabPanel value={value} index={0}>
+              <Metrics
+                model_type={data.model_type}
+                name={data.name}
+                metadata={data.metadata}
+                date_created={data.date_created}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <ROC_Prec_Recall
+                curve={0}
+                model_type={data.model_type}
+                name={data.name}
+                x={data.metadata.fpr}
+                y={data.metadata.tpr}
+                auc={data.metadata.roc_auc}
+                date_created={data.date_created}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              <ROC_Prec_Recall
+                curve={1}
+                model_type={data.model_type}
+                name={data.name}
+                x={data.metadata.recall_curve}
+                y={data.metadata.precision_curve}
+                auc={data.metadata.precision_recall_auc}
+                date_created={data.date_created}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+              <CMatrix
+                model_type={data.model_type}
+                date_created={data.date_created}
+                name={data.name}
+                cmatrix={data.metadata.confusion_matrix}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={4}>
+              <ModelInfo
+                keys={data.model.metadata.keys}
+                values={data.model.metadata.values}
+                columns={data.dataset.metadata.columns}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={5}>
+              <FeatureImp
+                model_type={data.model_type}
+                date_created={data.date_created}
+                name={data.name}
+                feature_scores={data.metadata.feature_scores}
+                columns={data.metadata.columns}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={6}>
+              Item Seven
+            </TabPanel>
+          </div>
+        </>
       )}
     </div>
   );

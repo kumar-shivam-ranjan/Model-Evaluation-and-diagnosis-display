@@ -1,5 +1,4 @@
 import React, { useState, useEffect} from 'react';
-// import '../containers/App.css';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -27,8 +26,8 @@ import {
     Link as RedirectLink,
 } from 'react-router-dom';
 
-function createData(eval_id, name, model_type, model_path, dataset_path, date_created) {
-  return { eval_id, name, model_type, model_path, dataset_path, date_created };
+function createData(eval_id, name, model_type, model_name, dataset_name, date_created) {
+  return { eval_id, name, model_type, model_name, dataset_name, date_created };
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -61,8 +60,8 @@ const headCells = [
   { id: 'eval_id', numeric: true, disablePadding: false, label: 'Evaluation ID' },
   { id: 'name', numeric: false, disablePadding: false, label: 'Evaluation Name' },
   { id: 'model_type', numeric: false, disablePadding: false, label: 'Model Type' },
-  { id: 'model_path', numeric: false, disablePadding: false, label: 'Model Path' },
-  { id: 'dataset_path', numeric: false, disablePadding: false, label: 'Dataset Path' },
+  { id: 'model_name', numeric: false, disablePadding: false, label: 'Model' },
+  { id: 'dataset_name', numeric: false, disablePadding: false, label: 'Dataset' },
   { id: 'date_created', numeric: false, disablePadding: false, label: 'Date Created' },
 ];
 
@@ -158,8 +157,6 @@ const EnhancedTableToolbar = (props) => {
   };
 
   const VisualizeHandler = eval_id => async(e) => {
-    // e.preventDefault();
-
     window.location.replace("/evaluation/"+eval_id);
   };
 
@@ -200,8 +197,8 @@ const EnhancedTableToolbar = (props) => {
             )}
 
             <Tooltip title="Delete">
-              <IconButton aria-label="delete">
-                <DeleteIcon onClick={onDeleteIconHandler} />
+              <IconButton aria-label="delete" onClick={onDeleteIconHandler}>
+                <DeleteIcon />
               </IconButton>
             </Tooltip>
 
@@ -264,19 +261,12 @@ export default function Homepage(){
     if(search)
       fetchData();
   },[data,search]);
-
+  console.log(data);
   let i;
   for(i=0;i<data.evaluation_entities.length;i++)
   {
     let k=data.evaluation_entities[i];
-    var model_file = k.model_path.split('\\');
-    var len = model_file.length;
-    k.model_path = model_file[len-1];
-
-    let dataset_file = k.dataset_path.split('\\');
-    len = dataset_file.length;
-    k.dataset_path = dataset_file[len-1];
-    rows.push(createData(k.eval_id,k.name,k.model_type,k.model_path,k.dataset_path,k.date_created));
+    rows.push(createData(k.eval_id,k.name,k.model_type,k.model.name,k.dataset.name,k.date_created));
   }
 
   const classes = useStyles();
@@ -338,7 +328,7 @@ export default function Homepage(){
   const isSelected = (eval_id) => selected.indexOf(eval_id) !== -1;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-  console.log(selected)
+
 
   return (
     <div className={classes.root}>
@@ -386,8 +376,8 @@ export default function Homepage(){
                       <TableCell component="th" id={labelId} scope="row" align="center">{row.eval_id}</TableCell>
                       <TableCell align="center">{row.name}</TableCell>
                       <TableCell align="center">{row.model_type}</TableCell>
-                      <TableCell align="center">{row.model_path}</TableCell>
-                      <TableCell align="center">{row.dataset_path}</TableCell>
+                      <TableCell align="center">{row.model_name}</TableCell>
+                      <TableCell align="center">{row.dataset_name}</TableCell>
                       <TableCell align="center">{row.date_created}</TableCell>
                     </TableRow>
                   );
@@ -416,7 +406,7 @@ export default function Homepage(){
       />
       <div className="text-center">
 
-        <RedirectLink color="inherit" to="/evaluate">
+        <RedirectLink color="inherit" to="/addeval">
           <Button variant="contained" color="primary" size="large">
             Add Evaluation
           </Button>
