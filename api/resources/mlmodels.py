@@ -1,40 +1,28 @@
-import sqlite3
 from flask_restful import Resource, reqparse
 from models.mlmodels import MLModel
 from resources.model_report import ModelReport
-from flask import Flask,request,render_template,redirect,url_for, jsonify
 import json
+import logging 
 
 class MLModelResource(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('model_path',
-        type=str,
-        required=True,
-        help="Please provide a model path"
-    )
-    parser.add_argument('model_type',
-        type=str,
-        required=True,
-        help="Please define the type of model"
-    )
-    parser.add_argument('name',
-        type=str,
-        required=True,
-        help="Please define the name of model"
-    )
 
     def get(self,model_id):
+        
         model_entity = MLModel.find_by_id(model_id)
-
+        
         if model_entity:
             if model_entity.meta:
+                logging.debug("Model metadata exists")
                 return model_entity.json()
+
             model_dict = model_entity.json()
-            model_object = ModelReport(model_dict['model_path'])
-
+            path = '\\'.join(model_dict['model_path'].split("\\")[:-1])
+            filename = model_dict['model_path'].split("\\")[-1].split(".")[0] + ".json"
+            json_path = "\\".join([path, filename])
+            model_object = ModelReport(model_dict['model_path'], json_path)
             metrics = model_object.model_report()
+            logging.debug(metrics)
             model_entity.meta = metrics
-
             model_entity.save_to_db()
             return model_entity.json()
 
@@ -54,11 +42,6 @@ class ModelList(Resource):
         required=True,
         help="Please provide a model path"
     )
-    parser.add_argument('model_type',
-        type=str,
-        required=True,
-        help="Please define the type of model"
-    )
     parser.add_argument('name',
         type=str,
         required=True,
@@ -69,7 +52,13 @@ class ModelList(Resource):
 
     def post(self):
         data = ModelList.parser.parse_args()
-
+        path = '\\'.join(data['model_path'].split("\\")[:-1])
+        filename = data['model_path'].split("\\")[-1].split(".")[0] + ".json"
+        json_path = "\\".join([path, filename])
+        f = open(json_path,)
+        json_payload = json.load(f)
+        f.close()
+        data["model_type"] = json_payload['use_case_type']
         item = MLModel(**data)
 
         try:

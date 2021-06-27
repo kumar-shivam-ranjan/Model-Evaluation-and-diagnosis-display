@@ -1,13 +1,15 @@
-import numpy as np
 import pandas as pd
-import pickle
-from sklearn import metrics
 import csv
 import json
-
 class DatasetReport():
-	def __init__(self, dataset_path):
+	def __init__(self, dataset_path, json_path):
 		self.dataset_file = dataset_path
+		self.json_path = json_path
+
+	def extract_json(self):
+		f = open(self.json_path,)
+		self.json_payload = json.load(f)
+		f.close()
 
 	def make_dataframe_set_cols(self):
 		with open(self.dataset_file) as csv_file:
@@ -39,7 +41,11 @@ class DatasetReport():
 				x = x + 1
 
 		self.duplicates = x
-
+  
+	def get_output_label(self):
+		self.output=self.dataframe[self.json_payload["label"]]
+		self.output=self.output.tolist()
+  
 	def get_memory(self):
 		self.memory = self.dataframe.memory_usage(index=True,deep=True).sum()
 
@@ -57,6 +63,7 @@ class DatasetReport():
 		self.outliers = sum(x == True for x in h)
 
 	def get_report(self):
+		self.extract_json()
 		self.make_dataframe_set_cols()
 		self.rows_and_cols()
 		self.description()
@@ -64,6 +71,7 @@ class DatasetReport():
 		self.get_memory()
 		self.missing_values()
 		self.get_outliers()
+		self.get_output_label()
 
 	def dataset_report(self):
 		self.get_report()
@@ -76,9 +84,11 @@ class DatasetReport():
 			"number_of_outliers":self.outliers,
 			"memory":int(self.memory),
 			"number_of_duplicates":self.duplicates,
-			"description":self.describe
+			"description":self.describe,
+			"output_label":self.output,
+			"author":self.json_payload["author"],
+			"label":self.json_payload["label"],
+			"copy":self.json_payload["copy"],
+			"dataset_split_method":self.json_payload["dataset_split_method"]
 		}
 
-
-# obj = DatasetReport("F:\\flask_related\\Datasets\\housing_test_dataset.csv")
-# print(obj.dataset_report())

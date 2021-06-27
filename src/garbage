@@ -1,6 +1,0 @@
-return (
-  <EvalForm
-    datasets={data.data1.data.dataset_entities}
-    models={data.data2.data.model_entities}
-  />
-);
