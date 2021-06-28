@@ -58,7 +58,7 @@ in a separate terminal window or press __control + C__.
 
 
 ## You can view the REST endpoints through swagger UI by following steps:
-- Clone the repo by `git clone https://github.com/aks2507/react-flask-project.git`
+- Clone the repo by `git clone https://github.com/ksrrock/Model-Evaluation-and-diagnosis-display.git`
 - `cd react-flask-project`
 - `cd client`
 - `yarn install`
