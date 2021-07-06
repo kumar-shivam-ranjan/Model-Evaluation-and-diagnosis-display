@@ -48,7 +48,9 @@ class EvaluationFunctions():
 		n_classes=len(set(y_test.tolist()))
 		if n_classes==2:
 			gain_lift_object = GainLiftPlots(probs,y_test)
+			
 			gain_chart_data = gain_lift_object.gain_plot_report()
+			logging.debug(gain_chart_data)
 			lift_chart_data = gain_lift_object.lift_plot_report()
 			acc=metrics.accuracy_score(y_actual,y_pred)
 			precision_score=metrics.precision_score(y_actual,y_pred)
